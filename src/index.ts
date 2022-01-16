@@ -1,5 +1,6 @@
-import express, { Request, Response, NextFunction } from 'express';
-import usersRoute from './routes/user.route';
+import express from 'express';
+import statusRoute from './routes/status.routes';
+import usersRoute from './routes/users.route';
 
 // Instanciando Aplicação
 const app = express();
@@ -10,10 +11,8 @@ app.use(express.urlencoded({ extended: true })); // Habilita querystring na conv
 
 // Configurando Rotas
 app.use(usersRoute);
+app.use(statusRoute);
 
-app.get('/status', (req: Request, res: Response, next: NextFunction) => {
-  res.status(200).send({ status: 'online' });
-});
 
 // Inicializando Aplicação
 
