@@ -10,7 +10,7 @@ class UserRepository {
     const { rows } = await db.query<User>(query);
     return rows || [];
   }
-  
+
   async findById(uuid: string): Promise<User> {
     const query = `
       SELECT uuid, username 
@@ -37,6 +37,29 @@ class UserRepository {
     const { rows } = await db.query<{ uuid: string }>(query, values);
     const [newuser] = rows;
     return newuser.uuid;
+  }
+
+  async update(user: User): Promise<void> {
+    const query = `
+      UPDATE app_auth_user
+      SET
+        username = $1,
+        password = crypt($2,'my_salt')
+      WHERE uuid = $3
+    `;
+    const values = [user.username, user.password, user.uuid];
+    await db.query(query, values);    
+  }
+
+  async remove (uuid: string): Promise<void> {
+    const query = `
+      DELETE 
+      FROM app_auth_user
+      WHERE uuid = $1
+    `;
+    const values = [uuid];
+
+    await db.query(query, values);
   }
 }
 
