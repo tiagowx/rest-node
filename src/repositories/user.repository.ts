@@ -1,3 +1,4 @@
+import  DatabaseError  from "../models/errors/database.error.model";
 import db from "../db";
 import User from "../models/user.model";
 
@@ -12,16 +13,20 @@ class UserRepository {
   }
 
   async findById(uuid: string): Promise<User> {
-    const query = `
-      SELECT uuid, username 
-      FROM app_auth_user
-      WHERE uuid = $1
-    `;
-    const values = [uuid];
-    const { rows } = await db.query<User>(query, values);
-    const [user] = rows;
+    try {
+      const query = `
+        SELECT uuid, username 
+        FROM app_auth_user
+        WHERE uuid = $1
+      `;
+      const values = [uuid];
+      const { rows } = await db.query<User>(query, values);
+      const [user] = rows;
 
-    return user;
+      return user;
+    } catch (error) {
+      throw new DatabaseError('Erro ao consultar ID', error);
+    }
   }
 
   async create(user: User): Promise<string> {
@@ -48,10 +53,10 @@ class UserRepository {
       WHERE uuid = $3
     `;
     const values = [user.username, user.password, user.uuid];
-    await db.query(query, values);    
+    await db.query(query, values);
   }
 
-  async remove (uuid: string): Promise<void> {
+  async remove(uuid: string): Promise<void> {
     const query = `
       DELETE 
       FROM app_auth_user

@@ -1,4 +1,5 @@
 import express from 'express';
+import errorHandler from './middlewares/error-handdler.middleware';
 import statusRoute from './routes/status.routes';
 import usersRoute from './routes/users.route';
 
@@ -13,9 +14,10 @@ app.use(express.urlencoded({ extended: true })); // Habilita querystring na conv
 app.use(usersRoute);
 app.use(statusRoute);
 
+// Configuração dos Handdlers de Erro
+app.use(errorHandler)
 
 // Inicializando Aplicação
-
 app.listen(3000, () => {
   const url = "http://localhost:3000";
   console.log(`Aplicação executando no caminho: ${url}`);
