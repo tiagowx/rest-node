@@ -1,5 +1,5 @@
 import express from 'express';
-import bearerAuthenticationMiddleware from './middlewares/bearer-authentication.middleware';
+import jwtAuthenticationMiddleware from './middlewares/jwt-authentication.middleware';
 import errorHandler from './middlewares/error-handdler.middleware';
 import authorizationRoute from './routes/authorization.route';
 import statusRoute from './routes/status.routes';
@@ -14,8 +14,10 @@ app.use(express.urlencoded({ extended: true })); // Habilita querystring na conv
 
 // Configurando Rotas
 app.use(statusRoute);
-app.use(bearerAuthenticationMiddleware, usersRoute);
 app.use(authorizationRoute);
+  // Rotas autenticadas
+  app.use(jwtAuthenticationMiddleware);
+  app.use(usersRoute);
 
 // Configuração dos Handdlers de Erro
 app.use(errorHandler)

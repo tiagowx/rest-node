@@ -1,11 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import ForbiddenError from "../models/errors/forbidden.error.model";
 import JWT from 'jsonwebtoken';
-import userRepository from "../repositories/user.repository";
-import { type } from "os";
 
 
-async function bearerAuthenticationMiddleware(req: Request, res: Response, next: NextFunction) {
+async function jwtAuthenticationMiddleware(req: Request, res: Response, next: NextFunction) {
 
   try {
     const authorizationHeaders = req.headers['authorization'];
@@ -22,21 +20,25 @@ async function bearerAuthenticationMiddleware(req: Request, res: Response, next:
 
     const tokenPayload = JWT.verify(token, 'my_secret_key');
 
+    try {
+      if (typeof tokenPayload !== 'object' || !tokenPayload.sub) {
+        throw new ForbiddenError('Token inválido!')
+      }
+      const user = {
+        uuid: tokenPayload.sub,
+        username: tokenPayload.username
+      };
 
-    if (typeof tokenPayload !== 'object' || !tokenPayload.sub) {
+      req.user = user;
+
+      next();
+
+    } catch (error) {
       throw new ForbiddenError('Token inválido!')
     }
-
-    const uuid = tokenPayload.sub;
-
-    const user = await userRepository.findById(uuid);
-
-    req.user = user;
-    
-    next();
   } catch (error) {
     next(error);
   }
 }
 
-export default bearerAuthenticationMiddleware;
+export default jwtAuthenticationMiddleware;
