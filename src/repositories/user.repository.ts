@@ -1,4 +1,4 @@
-import  DatabaseError  from "../models/errors/database.error.model";
+import DatabaseError from "../models/errors/database.error.model";
 import db from "../db";
 import User from "../models/user.model";
 
@@ -26,6 +26,27 @@ class UserRepository {
       return user;
     } catch (error) {
       throw new DatabaseError('Erro ao consultar ID', error);
+    }
+  }
+
+  async findByUserAuth(username: string, password: string): Promise<User | null> {
+    try {
+
+      const query = `
+          SELECT uuid, username
+          FROM app_auth_user
+          WHERE username = $1
+          AND password = crypt($2, 'my_salt')
+      `;
+
+      const values = [username, password]
+      const { rows } = await db.query(query, values);
+      const [user] = rows;
+
+      return user || null;
+
+    } catch (error) {
+      throw new DatabaseError('Erro ao consultar por username e password', error)
     }
   }
 
