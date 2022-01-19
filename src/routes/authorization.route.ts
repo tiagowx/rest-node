@@ -18,6 +18,17 @@ authorizationRoute.post('/token', (req: Request, res: Response, next: NextFuncti
     if (authenticationTypm !== 'Basic' || !token) {
       throw new ForbiddenError('Autenticação inválida');
     }
+
+    const tokenContent = Buffer.from(token,'base64').toString('utf-8');
+
+    const [username, password] = tokenContent.split(':');
+
+    if(!username || !password){
+      throw new ForbiddenError('Credenciais não preenchidas');
+    }
+
+    console.log(tokenContent);
+
   } catch (error) {
     next(error);
   }
