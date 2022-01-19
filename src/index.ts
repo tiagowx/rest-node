@@ -1,4 +1,5 @@
 import express from 'express';
+import bearerAuthenticationMiddleware from './middlewares/bearer-authentication.middleware';
 import errorHandler from './middlewares/error-handdler.middleware';
 import authorizationRoute from './routes/authorization.route';
 import statusRoute from './routes/status.routes';
@@ -12,8 +13,8 @@ app.use(express.json()); // Converte requisições em Json
 app.use(express.urlencoded({ extended: true })); // Habilita querystring na conversão de dados passados na Url
 
 // Configurando Rotas
-app.use(usersRoute);
 app.use(statusRoute);
+app.use(bearerAuthenticationMiddleware, usersRoute);
 app.use(authorizationRoute);
 
 // Configuração dos Handdlers de Erro

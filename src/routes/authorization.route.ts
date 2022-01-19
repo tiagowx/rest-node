@@ -11,6 +11,8 @@ authorizationRoute.post('/token', basicAuthenticationMiddleware, async (req: Req
   try {
     const user = req.user;
 
+    console.log(user);
+
     if (!user) {
       throw new ForbiddenError('Usuário não informado')
     }
@@ -19,11 +21,9 @@ authorizationRoute.post('/token', basicAuthenticationMiddleware, async (req: Req
     const jwtOptions = { subject: user?.uuid };
     const secretKey = 'my_secret_key';
 
-    const jwt = JWT.sign(jwtPayload, secretKey, jwtOptions);
+    const jwt = JWT.sign(jwtPayload, secretKey, jwtOptions);   
 
     res.status(StatusCodes.OK).json({ token: jwt });
-
-    next();
 
   } catch (error) {
     next(error);
